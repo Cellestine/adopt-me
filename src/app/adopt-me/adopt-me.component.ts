@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge, combineLatest,} from 'rxjs';
+import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge, combineLatest, tap,} from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 type Dog = {
@@ -31,6 +31,8 @@ export class AdoptMeComponent {
 
   httpClient = inject(HttpClient);
 
+  activeTab = 'adopted';
+  showTemperament = false;
 
 
   ngOnInit() {
@@ -72,9 +74,20 @@ export class AdoptMeComponent {
       )
     );
     
+    this.adoptedDogs$ = this.adoptSubject.pipe(
+      scan((acc, dog) => [...acc, dog], this.loadFromStorage('adopted')),
+      tap(list => localStorage.setItem('adopted', JSON.stringify(list))),
+      shareReplay(1)
+    );
     
-  }
+    this.wishlistDogs$ = this.wishlistSubject.pipe(
+      scan((acc, dog) => [...acc, dog], this.loadFromStorage('wishlist')),
+      tap(list => localStorage.setItem('wishlist', JSON.stringify(list))),
+      shareReplay(1)
+    );    
 
+  }
+// les methodes
   adopt(dog: Dog) {
     this.adoptSubject.next(dog);
   }
@@ -85,5 +98,11 @@ export class AdoptMeComponent {
   addToWishlist(dog: Dog) {
     this.wishlistSubject.next(dog);
   }  
+
+  loadFromStorage(key: string): Dog[] {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : [];
+  }
+  
   
 }
