@@ -33,25 +33,21 @@ export class AdoptMeComponent {
 
 
 
-
   ngOnInit() {
-    this.currentDog$ =  merge(
-      interval(10000).pipe(startWith(0)), // chien auto toutes les 10s
-      this.passSubject // chien à la demande
-    ).pipe(
+    this.currentDog$ = this.passSubject.pipe(
       startWith(0),
       switchMap(() =>
-        this.httpClient
-          .get<any[]>('https://api.thedogapi.com/v1/images/search', {
-            headers: {'x-api-key':'live_NnPSWm8hsCMV8geOxhDwygB35UwOqe9eHWQEHkwVXuyY8BaET2TXTexHxMjR45jB',},
-          })
-          .pipe(
-            map((res) => ({
-              image: res[0].url,
-              breed: res[0].breeds?.[0]?.name || 'Mystère',
-              temperament: res[0].breeds?.[0]?.temperament || 'Inconnu',
-            }))
-          )
+        this.httpClient.get<any[]>('https://api.thedogapi.com/v1/images/search', {
+          headers: {
+            'x-api-key': 'live_NnPSWm8hsCMV8geOxhDwygB35UwOqe9eHWQEHkwVXuyY8BaET2TXTexHxMjR45jB',
+          },
+        }).pipe(
+          map((res) => ({
+            image: res[0].url,
+            breed: res[0].breeds?.[0]?.name || 'Mystère',
+            temperament: res[0].breeds?.[0]?.temperament || 'Inconnu',
+          }))
+        )
       ),
       shareReplay(1)
     );
