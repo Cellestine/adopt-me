@@ -1,4 +1,4 @@
-<h2 style="text-align: center">🐾 Un nouvel ami est arrivé !</h2>
+<h2 style="text-align: center">🐾 Pet Finder !!</h2>
 
 <ng-container *ngIf="currentDog$ | async as dog">
   <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
@@ -13,6 +13,10 @@
     <button (click)="pass()" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer;">
         ⏩ Passer
       </button>
+      <button (click)="addToWishlist(dog)" style="padding: 10px 20px; background-color: #2196f3; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        💾 Ajouter à la wishlist
+      </button>
+      
   </div>
 </ng-container>
 
@@ -26,3 +30,12 @@
     <p>{{ dog.breed }}</p>
   </li>
 </ul>
+
+<h3>⭐ Ma wishlist</h3>
+<ul style="list-style: none; display: flex; flex-wrap: wrap; gap: 16px;">
+  <li *ngFor="let dog of wishlistDogs$ | async" style="text-align: center;">
+    <img [src]="dog.image" width="100" style="border-radius: 8px; border: 2px dashed #2196f3;" />
+    <p>{{ dog.breed }}</p>
+  </li>
+</ul>
+

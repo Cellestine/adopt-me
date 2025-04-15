@@ -20,11 +20,17 @@ type Dog = {
 export class AdoptMeComponent {
   currentDog$!: Observable<Dog>;
   adoptedDogs$!: Observable<Dog[]>;
+  wishlistDogs$!: Observable<Dog[]>;
+
 
   private adoptSubject = new Subject<Dog>();
   passSubject = new Subject<void>();
+  wishlistSubject = new Subject<Dog>();
 
   httpClient = inject(HttpClient);
+
+
+
 
   ngOnInit() {
     this.currentDog$ =  merge(
@@ -35,10 +41,7 @@ export class AdoptMeComponent {
       switchMap(() =>
         this.httpClient
           .get<any[]>('https://api.thedogapi.com/v1/images/search', {
-            headers: {
-              'x-api-key':
-                'live_NnPSWm8hsCMV8geOxhDwygB35UwOqe9eHWQEHkwVXuyY8BaET2TXTexHxMjR45jB',
-            },
+            headers: {'x-api-key':'live_NnPSWm8hsCMV8geOxhDwygB35UwOqe9eHWQEHkwVXuyY8BaET2TXTexHxMjR45jB',},
           })
           .pipe(
             map((res) => ({
@@ -54,6 +57,12 @@ export class AdoptMeComponent {
     this.adoptedDogs$ = this.adoptSubject.pipe(
       scan((acc, dog) => [...acc, dog], [] as Dog[])
     );
+
+    this.wishlistDogs$ = this.wishlistSubject.pipe(
+      scan((acc, dog) => [...acc, dog], [] as Dog[]),
+      shareReplay(1)
+    );
+    
   }
 
   adopt(dog: Dog) {
@@ -62,5 +71,9 @@ export class AdoptMeComponent {
   pass() {
     this.passSubject.next();
   }
+
+  addToWishlist(dog: Dog) {
+    this.wishlistSubject.next(dog);
+  }  
   
 }
