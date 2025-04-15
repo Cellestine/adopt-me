@@ -28,25 +28,49 @@
     <!-- Section adoptés -->
     <div class="list" *ngIf="activeTab === 'adopted'">
       <h3>🐶 Adoptés</h3>
-      <ng-container *ngFor="let dog of adoptedDogs$ | async">
-        <img [src]="dog.image" width="80" />
-      </ng-container>
+      <div style="position: relative; display: inline-block;" *ngFor="let dog of adoptedDogs$ | async">
+        <img [src]="dog.image" width="100" style="border-radius: 8px; border: 1px solid #ccc;" />
+        <button (click)="removeFromAdopted(dog)" style="
+          position: absolute;
+          top: -6px;
+          right: -6px;
+          background-color: crimson;
+          border: none;
+          color: white;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          cursor: pointer;
+          font-size: 12px;
+        ">
+          ×
+        </button>
+      </div>
+      
     </div>
   
     <!-- Section favoris -->
-    <div *ngIf="activeTab === 'wishlist'" class="list">
-        <input
-          type="text"
-          [formControl]="raceFilterControl"
-          placeholder="Filtrer par race"
-          style="margin-bottom: 10px; padding: 5px; border-radius: 6px;"
-        />
-      
+
     <div class="list" *ngIf="activeTab === 'wishlist'">
-      <h3>💾 Favoris</h3>
-      <ng-container *ngFor="let dog of wishlistDogs$ | async">
-        <img [src]="dog.image" width="80" />
-      </ng-container>
+        <h3>💾 Favoris</h3>
+        <div style="position: relative; display: inline-block;" *ngFor="let dog of filteredWishlist$ | async">
+            <img [src]="dog.image" width="100" style="border-radius: 8px; border: 1px solid #ccc;" />
+            <button (click)="removeFromWishlist(dog)" style="
+              position: absolute;
+              top: -6px;
+              right: -6px;
+              background-color: red;
+              border: none;
+              color: white;
+              border-radius: 50%;
+              width: 20px;
+              height: 20px;
+              cursor: pointer;
+              font-size: 12px;
+            ">
+              ×
+            </button>
+          </div>
     </div>
-  </div>
-  
+          
+   

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge, combineLatest, tap,} from 'rxjs';
+import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge, combineLatest, tap, BehaviorSubject,} from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 type Dog = {
@@ -20,14 +20,17 @@ type Dog = {
 
 export class AdoptMeComponent {
   currentDog$!: Observable<Dog>;
-  adoptedDogs$!: Observable<Dog[]>;
-  wishlistDogs$!: Observable<Dog[]>;
   filteredWishlist$!: Observable<Dog[]>;
 
-  private adoptSubject = new Subject<Dog>();
   passSubject = new Subject<void>();
-  wishlistSubject = new Subject<Dog>();
   raceFilterControl = new FormControl<string>('');
+
+  private adoptedSubject = new BehaviorSubject<Dog[]>(this.loadFromStorage('adopted'));
+  adoptedDogs$ = this.adoptedSubject.asObservable();
+
+  private wishlistSubject = new BehaviorSubject<Dog[]>(this.loadFromStorage('wishlist'));
+  wishlistDogs$ = this.wishlistSubject.asObservable();
+
 
   httpClient = inject(HttpClient);
 
@@ -54,15 +57,6 @@ export class AdoptMeComponent {
       shareReplay(1)
     );
 
-    this.adoptedDogs$ = this.adoptSubject.pipe(
-      scan((acc, dog) => [...acc, dog], [] as Dog[])
-    );
-
-    this.wishlistDogs$ = this.wishlistSubject.pipe(
-      scan((acc, dog) => [...acc, dog], [] as Dog[]),
-      shareReplay(1)
-    );
-
     this.filteredWishlist$ = combineLatest([
       this.wishlistDogs$,
       this.raceFilterControl.valueChanges.pipe(startWith(''))
@@ -72,37 +66,52 @@ export class AdoptMeComponent {
           dog.breed.toLowerCase().includes(race?.toLowerCase() || '')
         )
       )
-    );
-    
-    this.adoptedDogs$ = this.adoptSubject.pipe(
-      scan((acc, dog) => [...acc, dog], this.loadFromStorage('adopted')),
-      tap(list => localStorage.setItem('adopted', JSON.stringify(list))),
-      shareReplay(1)
-    );
-    
-    this.wishlistDogs$ = this.wishlistSubject.pipe(
-      scan((acc, dog) => [...acc, dog], this.loadFromStorage('wishlist')),
-      tap(list => localStorage.setItem('wishlist', JSON.stringify(list))),
-      shareReplay(1)
-    );    
+    );   
 
   }
 // les methodes
   adopt(dog: Dog) {
-    this.adoptSubject.next(dog);
-  }
+  const current = this.adoptedSubject.getValue();
+  const updated = [...current, dog];
+  this.adoptedSubject.next(updated);
+  localStorage.setItem('adopted', JSON.stringify(updated));
+}
+
+removeFromAdopted(dog: Dog) {
+  const current = this.adoptedSubject.getValue();
+  const updated = current.filter(d => d.image !== dog.image);
+  this.adoptedSubject.next(updated);
+  localStorage.setItem('adopted', JSON.stringify(updated));
+}
+
   pass() {
     this.passSubject.next();
   }
 
   addToWishlist(dog: Dog) {
-    this.wishlistSubject.next(dog);
-  }  
-
-  loadFromStorage(key: string): Dog[] {
-    const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : [];
+    const current = this.wishlistSubject.getValue();
+    const updated = [...current, dog];
+    this.wishlistSubject.next(updated);
+    localStorage.setItem('wishlist', JSON.stringify(updated));
   }
   
+  removeFromWishlist(dog: Dog) {
+    const current = this.wishlistSubject.getValue();
+    const updated = current.filter(d => d.image !== dog.image);
+    this.wishlistSubject.next(updated);
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+  }
+  
+  loadFromStorage(key: string): Dog[] {
+    const saved = localStorage.getItem(key);
+    try {
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed)
+        ? parsed.filter(dog => dog.image && dog.breed)
+        : [];
+    } catch {
+      return [];
+    }
+  }
   
 }
