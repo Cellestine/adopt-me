@@ -1,0 +1,70 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .dog-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    width: 320px;
+    text-align: center;
+  
+    img {
+      width: 100%;
+      height: auto;
+    }
+  
+    .info {
+      padding: 16px;
+  
+      .toggle-temperament {
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 8px 0;
+      }
+  
+      .actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 12px;
+  
+        button {
+          font-size: 20px;
+          background: none;
+          border: none;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 8px;
+    button {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+  }
+  
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  
+    img {
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+  }
+  
