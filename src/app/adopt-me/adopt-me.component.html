@@ -21,8 +21,13 @@
   
     <!-- Onglets de navigation -->
     <div class="tabs">
-      <button (click)="activeTab = 'adopted'">Adoptés</button>
-      <button (click)="activeTab = 'wishlist'">Favoris</button>
+        <button (click)="activeTab = 'adopted'">
+            Adoptés 🐶 ({{ adoptedCount$ | async }})
+        </button>
+        
+        <button (click)="activeTab = 'wishlist'">
+            Favoris 💖 ({{ wishlistCount$ | async }})
+        </button>
     </div>
   
     <!-- Section adoptés -->
@@ -52,7 +57,7 @@
     <!-- Section favoris -->
 
     <div class="list" *ngIf="activeTab === 'wishlist'">
-        <h3>💾 Favoris</h3>
+        <h3>💖 Favoris</h3>
         <div style="position: relative; display: inline-block;" *ngFor="let dog of filteredWishlist$ | async">
             <img [src]="dog.image" width="100" style="border-radius: 8px; border: 1px solid #ccc;" />
             <button (click)="removeFromWishlist(dog)" style="

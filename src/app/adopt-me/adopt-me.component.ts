@@ -31,6 +31,14 @@ export class AdoptMeComponent {
   private wishlistSubject = new BehaviorSubject<Dog[]>(this.loadFromStorage('wishlist'));
   wishlistDogs$ = this.wishlistSubject.asObservable();
 
+  adoptedCount$ = this.adoptedDogs$.pipe(
+    map(dogs => dogs.length)
+  );
+  
+  wishlistCount$ = this.wishlistDogs$.pipe(
+    map(dogs => dogs.length)
+  );
+  
 
   httpClient = inject(HttpClient);
 
