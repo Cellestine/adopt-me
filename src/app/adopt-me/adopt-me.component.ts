@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge,} from 'rxjs';
+import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge, combineLatest,} from 'rxjs';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 type Dog = {
   image: string;
@@ -12,7 +13,7 @@ type Dog = {
 @Component({
   selector: 'app-adopt-me',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './adopt-me.component.html',
   styleUrl: './adopt-me.component.scss',
 })
@@ -21,11 +22,12 @@ export class AdoptMeComponent {
   currentDog$!: Observable<Dog>;
   adoptedDogs$!: Observable<Dog[]>;
   wishlistDogs$!: Observable<Dog[]>;
-
+  filteredWishlist$!: Observable<Dog[]>;
 
   private adoptSubject = new Subject<Dog>();
   passSubject = new Subject<void>();
   wishlistSubject = new Subject<Dog>();
+  raceFilterControl = new FormControl<string>('');
 
   httpClient = inject(HttpClient);
 
@@ -62,6 +64,18 @@ export class AdoptMeComponent {
       scan((acc, dog) => [...acc, dog], [] as Dog[]),
       shareReplay(1)
     );
+
+    this.filteredWishlist$ = combineLatest([
+      this.wishlistDogs$,
+      this.raceFilterControl.valueChanges.pipe(startWith(''))
+    ]).pipe(
+      map(([dogs, race]) =>
+        dogs.filter((dog) =>
+          dog.breed.toLowerCase().includes(race?.toLowerCase() || '')
+        )
+      )
+    );
+    
     
   }
 

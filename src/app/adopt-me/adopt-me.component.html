@@ -31,9 +31,17 @@
   </li>
 </ul>
 
+<input
+  type="text"
+  [formControl]="raceFilterControl"
+  placeholder="Filtrer par race"
+  style="padding: 6px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px"
+/>
+
+
 <h3>⭐ Ma wishlist</h3>
 <ul style="list-style: none; display: flex; flex-wrap: wrap; gap: 16px;">
-  <li *ngFor="let dog of wishlistDogs$ | async" style="text-align: center;">
+  <li *ngFor="let dog of filteredWishlist$ | async">
     <img [src]="dog.image" width="100" style="border-radius: 8px; border: 2px dashed #2196f3;" />
     <p>{{ dog.breed }}</p>
   </li>
