@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable,} from 'rxjs';
+import { interval, switchMap, startWith, shareReplay, Subject, scan, map, Observable, merge,} from 'rxjs';
 
 type Dog = {
   image: string;
@@ -22,11 +22,15 @@ export class AdoptMeComponent {
   adoptedDogs$!: Observable<Dog[]>;
 
   private adoptSubject = new Subject<Dog>();
+  passSubject = new Subject<void>();
 
   httpClient = inject(HttpClient);
 
   ngOnInit() {
-    this.currentDog$ = interval(10000).pipe(
+    this.currentDog$ =  merge(
+      interval(10000).pipe(startWith(0)), // chien auto toutes les 10s
+      this.passSubject // chien à la demande
+    ).pipe(
       startWith(0),
       switchMap(() =>
         this.httpClient
@@ -55,4 +59,8 @@ export class AdoptMeComponent {
   adopt(dog: Dog) {
     this.adoptSubject.next(dog);
   }
+  pass() {
+    this.passSubject.next();
+  }
+  
 }
