@@ -1,1 +1,25 @@
-<p>adopt-me works!</p>
+<h2 style="text-align: center">🐾 Un nouvel ami est arrivé !</h2>
+
+<ng-container *ngIf="currentDog$ | async as dog">
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+    <img [src]="dog.image" alt="Chien à adopter" width="300" style="border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+    
+    <h3>{{ dog.breed }}</h3>
+    <p><strong>Tempérament :</strong> {{ dog.temperament }}</p>
+
+    <button (click)="adopt(dog)" style="padding: 10px 20px; background-color: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+      💖 L'adopter
+    </button>
+  </div>
+</ng-container>
+
+<hr style="margin: 40px 0;" />
+
+<h3>📦 Mes adoptions</h3>
+
+<ul style="list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 16px;">
+  <li *ngFor="let dog of adoptedDogs$ | async" style="text-align: center;">
+    <img [src]="dog.image" width="100" style="border-radius: 8px; border: 2px solid #ccc;" />
+    <p>{{ dog.breed }}</p>
+  </li>
+</ul>
