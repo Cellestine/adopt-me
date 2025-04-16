@@ -52,7 +52,7 @@ export class AdoptMeComponent {
       switchMap(() =>
         this.httpClient.get<any[]>('https://api.thedogapi.com/v1/images/search', {
           headers: {
-            'x-api-key': 'live_NnPSWm8hsCMV8geOxhDwygB35UwOqe9eHWQEHkwVXuyY8BaET2TXTexHxMjR45jB',
+            'x-api-key': 'METTRE SON API KEY',
           },
         }).pipe(
           map((res) => ({
